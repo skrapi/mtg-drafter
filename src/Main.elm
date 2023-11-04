@@ -1,11 +1,11 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, div, input, text)
-import Html.Attributes exposing (placeholder, style, type_, value)
+import Html exposing (Html, div, img, input, text)
+import Html.Attributes exposing (height, placeholder, src, style, type_, value, width)
 import Html.Events exposing (onInput)
 import Http
-import Json.Decode exposing (Decoder, at, map, string)
+import Json.Decode exposing (Decoder, at, field, index, list, map, string)
 import Url.Builder
 
 
@@ -23,8 +23,10 @@ main =
 
 
 type alias Model =
-    { cardId : Maybe String
+    { searchName : Maybe String
     , cardInfo : Maybe CardInfo
+    , cardImageUrl : Maybe String
+    , searchResult : List String
     }
 
 
@@ -34,7 +36,7 @@ type alias CardInfo =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { cardId = Nothing, cardInfo = Nothing }, Cmd.none )
+    ( { searchName = Nothing, cardInfo = Nothing, searchResult = [], cardImageUrl = Nothing }, Cmd.none )
 
 
 
@@ -42,14 +44,16 @@ init _ =
 
 
 type Msg
-    = GotJson (Result Http.Error CardInfo)
-    | GotId String
+    = GotCardName (Result Http.Error CardInfo)
+    | GotCardList (Result Http.Error (List String))
+    | GotCardImage (Result Http.Error String)
+    | GotSearchName String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GotJson result ->
+        GotCardName result ->
             let
                 _ =
                     Debug.log "result" result
@@ -65,15 +69,47 @@ update msg model =
                 Err _ ->
                     ( { model | cardInfo = Nothing }, Cmd.none )
 
-        GotId id ->
+        GotCardImage result ->
             let
                 _ =
-                    Debug.log "id" id
+                    Debug.log "result" result
+            in
+            case result of
+                Ok cardImageUrl ->
+                    let
+                        _ =
+                            Debug.log "cardImageUrl" cardImageUrl
+                    in
+                    ( { model | cardImageUrl = Just cardImageUrl }, Cmd.none )
+
+                Err _ ->
+                    ( { model | cardInfo = Nothing }, Cmd.none )
+
+        GotCardList result ->
+            let
+                _ =
+                    Debug.log "result" result
+            in
+            case result of
+                Ok cardList ->
+                    let
+                        _ =
+                            Debug.log "cardList" cardList
+                    in
+                    ( { model | searchResult = cardList }, Cmd.none )
+
+                Err _ ->
+                    ( { model | searchResult = [] }, Cmd.none )
+
+        GotSearchName name ->
+            let
+                _ =
+                    Debug.log "name" name
 
                 resp =
-                    getCardInfo id
+                    getCardImageFromName name
             in
-            ( { model | cardId = Just id }, resp )
+            ( { model | searchName = Just name }, resp )
 
 
 cardsUrl : String -> String
@@ -81,11 +117,40 @@ cardsUrl id =
     Url.Builder.crossOrigin "https://api.magicthegathering.io/v1/cards/" [ id ] []
 
 
-getCardInfo : String -> Cmd Msg
-getCardInfo id =
+cardsUrlByName : String -> String
+cardsUrlByName name =
+    Url.Builder.crossOrigin "https://api.magicthegathering.io/v1/cards" [] [ Url.Builder.string "name" name ]
+
+
+getCardInfoFromName : String -> Cmd Msg
+getCardInfoFromName name =
+    Http.get
+        { url = cardsUrlByName name
+        , expect = Http.expectJson GotCardName cardsListHeadDecoder
+        }
+
+
+getCardInfoFromId : String -> Cmd Msg
+getCardInfoFromId id =
     Http.get
         { url = cardsUrl id
-        , expect = Http.expectJson GotJson responseDecoder
+        , expect = Http.expectJson GotCardName responseDecoder
+        }
+
+
+getCardListFromName : String -> Cmd Msg
+getCardListFromName name =
+    Http.get
+        { url = cardsUrlByName name
+        , expect = Http.expectJson GotCardList cardsListDecoder
+        }
+
+
+getCardImageFromName : String -> Cmd Msg
+getCardImageFromName name =
+    Http.get
+        { url = cardsUrlByName name
+        , expect = Http.expectJson GotCardImage cardsListHeadImgUrlDecoder
         }
 
 
@@ -94,8 +159,23 @@ responseDecoder =
     map CardInfo
         (at
             [ "card", "name" ]
-            string
+            Json.Decode.string
         )
+
+
+cardsListHeadDecoder : Decoder CardInfo
+cardsListHeadDecoder =
+    map CardInfo (field "cards" (index 0 (field "name" string)))
+
+
+cardsListHeadImgUrlDecoder : Decoder String
+cardsListHeadImgUrlDecoder =
+    field "cards" (index 0 (field "imageUrl" string))
+
+
+cardsListDecoder : Decoder (List String)
+cardsListDecoder =
+    field "cards" (list string)
 
 
 
@@ -103,7 +183,7 @@ responseDecoder =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
@@ -114,8 +194,14 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div []
-        [ viewInput "text" "Id" (Maybe.withDefault "" model.cardId) GotId
+        [ viewInput "text" "Id" (Maybe.withDefault "" model.searchName) GotSearchName
         , viewValidation model
+        , img
+            [ src <|
+                Maybe.withDefault "" model.cardImageUrl
+            , width 300
+            ]
+            []
         ]
 
 
