@@ -249,22 +249,21 @@ view : Model -> Html Msg
 view model =
     Element.layout [ Background.color <| Style.colorPalette Style.PrimaryDark ] <|
         Element.column
-            [ Element.width Element.fill ]
+            [ Element.width Element.fill, Element.padding 10, Element.spacing 7 ]
             [ h1 "MTG Drafter"
-            , Element.row []
-                [ Element.column []
-                    [ mainText "Results"
-                    , Input.text [ Element.width <| Element.px 300 ]
+            , Element.row [ Element.padding 10, Element.spacing 7 ]
+                [ Element.column [ Element.padding 10, Element.spacing 7, Element.alignTop ]
+                    [ Input.text [ Element.width <| Element.px 300 ]
                         { placeholder = Just (Input.placeholder [] (mainText "type more than 4 chars"))
                         , onChange = GotSearchName
                         , text = Maybe.withDefault "" model.searchName
                         , label = Input.labelLeft [] (mainText "Search")
                         }
-                    , Element.column [] (List.map cardNameButton model.searchResult)
+                    , Element.column [ Element.padding 10, Element.spacing 7 ] (List.map cardNameButton model.searchResult)
                     ]
-                , Element.column [ Element.px 300 |> Element.width, Element.alignTop ]
+                , Element.column [ Element.width <| Element.px 300, Element.padding 10, Element.spacing 7, Element.alignTop ]
                     [ mainText "Drafted Cards"
-                    , Element.column []
+                    , Element.column [ Element.padding 10, Element.spacing 7 ]
                         (List.map cardDisplay
                             model.draftedCards
                         )
