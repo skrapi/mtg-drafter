@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (Html, div, img, input, text)
-import Html.Attributes exposing (height, placeholder, src, style, type_, value, width)
+import Html.Attributes exposing (placeholder, src, style, type_, value, width)
 import Html.Events exposing (onInput)
 import Http
 import Json.Decode exposing (Decoder, at, field, index, list, map, string)
@@ -103,11 +103,8 @@ update msg model =
 
         GotSearchName name ->
             let
-                _ =
-                    Debug.log "name" name
-
                 resp =
-                    getCardImageFromName name
+                    getCardListFromName name
             in
             ( { model | searchName = Just name }, resp )
 
@@ -175,11 +172,7 @@ cardsListHeadImgUrlDecoder =
 
 cardsListDecoder : Decoder (List String)
 cardsListDecoder =
-    field "cards" (list string)
-
-
-
--- SUBSCRIPTIONS
+    field "cards" (list (field "name" string))
 
 
 subscriptions : Model -> Sub Msg
