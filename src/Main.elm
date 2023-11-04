@@ -6,6 +6,7 @@ import Html.Attributes exposing (placeholder, style, type_, value)
 import Html.Events exposing (onInput)
 import Http
 import Json.Decode exposing (Decoder, at, map, string)
+import Url.Builder
 
 
 
@@ -70,15 +71,20 @@ update msg model =
                     Debug.log "id" id
 
                 resp =
-                    getCardInfo
+                    getCardInfo id
             in
-            ( model, resp )
+            ( { model | cardId = Just id }, resp )
 
 
-getCardInfo : Cmd Msg
-getCardInfo =
+cardsUrl : String -> String
+cardsUrl id =
+    Url.Builder.crossOrigin "https://api.magicthegathering.io/v1/cards/" [ id ] []
+
+
+getCardInfo : String -> Cmd Msg
+getCardInfo id =
     Http.get
-        { url = "https://api.magicthegathering.io/v1/cards/386616"
+        { url = cardsUrl id
         , expect = Http.expectJson GotJson responseDecoder
         }
 
