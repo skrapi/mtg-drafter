@@ -1,11 +1,13 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, img, input, text)
-import Html.Attributes exposing (placeholder, src, style, type_, value, width)
-import Html.Events exposing (onClick, onInput)
+import Element exposing (text)
+import Element.Background as Background
+import Element.Input as Input
+import Html exposing (Html)
 import Http
-import Json.Decode exposing (Decoder, at, field, index, list, map, string)
+import Json.Decode exposing (Decoder, at, field, index, list, map3, string)
+import Style exposing (Style(..), styling)
 import Url.Builder
 
 
@@ -26,13 +28,13 @@ type alias Model =
     { searchName : Maybe String
     , cardInfo : Maybe CardInfo
     , cardImageUrl : Maybe String
-    , searchResult : List String
-    , draftedCards : List String
+    , searchResult : List CardInfo
+    , draftedCards : List CardInfo
     }
 
 
 type alias CardInfo =
-    { name : String }
+    { name : String, manaCost : Maybe String, convertedManaCost : Maybe Int }
 
 
 init : () -> ( Model, Cmd Msg )
@@ -46,42 +48,26 @@ init _ =
 
 type Msg
     = GotCardName (Result Http.Error CardInfo)
-    | GotCardList (Result Http.Error (List String))
+    | GotCardList (Result Http.Error (List CardInfo))
     | GotCardImage (Result Http.Error String)
     | GotSearchName String
-    | SelectCard String
+    | SelectCard CardInfo
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GotCardName result ->
-            let
-                _ =
-                    Debug.log "result" result
-            in
             case result of
                 Ok cardInfo ->
-                    let
-                        _ =
-                            Debug.log "cardInfo" cardInfo
-                    in
                     ( { model | cardInfo = Just cardInfo }, Cmd.none )
 
                 Err _ ->
                     ( { model | cardInfo = Nothing }, Cmd.none )
 
         GotCardImage result ->
-            let
-                _ =
-                    Debug.log "result" result
-            in
             case result of
                 Ok cardImageUrl ->
-                    let
-                        _ =
-                            Debug.log "cardImageUrl" cardImageUrl
-                    in
                     ( { model | cardImageUrl = Just cardImageUrl }, Cmd.none )
 
                 Err _ ->
@@ -90,28 +76,59 @@ update msg model =
         GotCardList result ->
             let
                 _ =
-                    Debug.log "result" result
+                    Debug.log "result of card list" result
             in
             case result of
                 Ok cardList ->
-                    let
-                        _ =
-                            Debug.log "cardList" cardList
-                    in
-                    ( { model | searchResult = cardList }, Cmd.none )
+                    ( { model | searchResult = unique cardList }, Cmd.none )
 
                 Err _ ->
-                    ( { model | searchResult = [] }, Cmd.none )
+                    ( model, Cmd.none )
 
         GotSearchName name ->
             let
+                _ =
+                    Debug.log "search name" name
+
                 resp =
-                    getCardListFromName name
+                    if String.length name > 4 then
+                        getCardListFromName name
+
+                    else
+                        Cmd.none
             in
             ( { model | searchName = Just name }, resp )
 
         SelectCard name ->
-            ( { model | draftedCards = List.append model.draftedCards [ name ] }, Cmd.none )
+            let
+                draftList =
+                    [ name ]
+                        |> List.append model.draftedCards
+                        |> List.sortBy
+                            (\n ->
+                                case n.convertedManaCost of
+                                    Just num ->
+                                        num
+
+                                    Nothing ->
+                                        -1
+                            )
+            in
+            ( { model | draftedCards = draftList }, Cmd.none )
+
+
+unique : List a -> List a
+unique list =
+    List.foldl
+        (\a uniques ->
+            if List.member a uniques then
+                uniques
+
+            else
+                uniques ++ [ a ]
+        )
+        []
+        list
 
 
 cardsUrl : String -> String
@@ -122,14 +139,6 @@ cardsUrl id =
 cardsUrlByName : String -> String
 cardsUrlByName name =
     Url.Builder.crossOrigin "https://api.magicthegathering.io/v1/cards" [] [ Url.Builder.string "name" name ]
-
-
-getCardInfoFromName : String -> Cmd Msg
-getCardInfoFromName name =
-    Http.get
-        { url = cardsUrlByName name
-        , expect = Http.expectJson GotCardName cardsListHeadDecoder
-        }
 
 
 getCardInfoFromId : String -> Cmd Msg
@@ -158,16 +167,19 @@ getCardImageFromName name =
 
 responseDecoder : Decoder CardInfo
 responseDecoder =
-    map CardInfo
+    map3 CardInfo
         (at
             [ "card", "name" ]
             Json.Decode.string
         )
-
-
-cardsListHeadDecoder : Decoder CardInfo
-cardsListHeadDecoder =
-    map CardInfo (field "cards" (index 0 (field "name" string)))
+        (at
+            [ "card", "manaCost" ]
+            (Json.Decode.maybe Json.Decode.string)
+        )
+        (at
+            [ "card", "cmc" ]
+            (Json.Decode.maybe Json.Decode.int)
+        )
 
 
 cardsListHeadImgUrlDecoder : Decoder String
@@ -175,9 +187,16 @@ cardsListHeadImgUrlDecoder =
     field "cards" (index 0 (field "imageUrl" string))
 
 
-cardsListDecoder : Decoder (List String)
+cardsListDecoder : Decoder (List CardInfo)
 cardsListDecoder =
-    field "cards" (list (field "name" string))
+    field "cards"
+        (list
+            (map3 CardInfo
+                (field "name" string)
+                (Json.Decode.maybe (field "manaCost" string))
+                (Json.Decode.maybe (field "cmc" Json.Decode.int))
+            )
+        )
 
 
 subscriptions : Model -> Sub Msg
@@ -189,44 +208,66 @@ subscriptions _ =
 -- VIEW
 
 
-cardNameButton : String -> Html Msg
-cardNameButton item =
-    div []
-        [ button [ onClick (SelectCard item) ] [ text item ] ]
+cardNameButton : CardInfo -> Element.Element Msg
+cardNameButton card =
+    Input.button [] { onPress = Just <| SelectCard card, label = mainText card.name }
 
 
-listItem : String -> Html Msg
-listItem item =
-    div []
-        [ text item ]
+h1 : String -> Element.Element msg
+h1 val =
+    Element.el (styling Style.Header)
+        (text val)
+
+
+mainText : String -> Element.Element msg
+mainText val =
+    Element.el (styling MainText)
+        (text val)
+
+
+cardDisplay : CardInfo -> Element.Element msg
+cardDisplay card =
+    Element.row [ Element.width Element.fill ]
+        [ mainText card.name
+        , mainText "  -  "
+        , mainText (String.fromInt (Maybe.withDefault 0 card.convertedManaCost))
+        , mainText "  -  "
+        , mainText <| Maybe.withDefault "" card.manaCost
+        ]
 
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ viewInput "text" "Id" (Maybe.withDefault "" model.searchName) GotSearchName
-        , viewValidation model
-        , img
-            [ src <|
-                Maybe.withDefault "" model.cardImageUrl
-            , width 300
+    Element.layout [ Background.color <| Style.colorPalette Style.PrimaryDark ] <|
+        Element.column
+            [ Element.width Element.fill ]
+            [ h1 "MTG Drafter"
+            , Element.row []
+                [ Element.column []
+                    [ mainText "Results"
+                    , Input.text [ Element.width <| Element.px 300 ]
+                        { placeholder = Just (Input.placeholder [] (mainText "type more than 4 chars"))
+                        , onChange = GotSearchName
+                        , text = Maybe.withDefault "" model.searchName
+                        , label = Input.labelLeft [] (mainText "Search")
+                        }
+                    , Element.column [] (List.map cardNameButton model.searchResult)
+                    ]
+                , Element.column [ Element.px 300 |> Element.width, Element.alignTop ]
+                    [ mainText "Drafted Cards"
+                    , Element.column []
+                        (List.map cardDisplay
+                            model.draftedCards
+                        )
+                    ]
+                ]
             ]
-            []
-        , div [] (List.map listItem model.draftedCards)
-        , div [] (List.map cardNameButton model.searchResult)
-        ]
 
 
-emptyCardInfo : CardInfo
-emptyCardInfo =
-    CardInfo ""
 
-
-viewInput : String -> String -> String -> (String -> msg) -> Html msg
-viewInput t p v toMsg =
-    input [ type_ t, placeholder p, value v, onInput toMsg ] []
-
-
-viewValidation : Model -> Html msg
-viewValidation model =
-    div [ style "color" "green" ] [ text <| (Maybe.withDefault emptyCardInfo model.cardInfo).name ]
+-- , img
+--     [ src <|
+--         Maybe.withDefault "" model.cardImageUrl
+--     , width 300
+--     ]
+--     []
