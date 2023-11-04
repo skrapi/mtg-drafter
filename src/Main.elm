@@ -6,7 +6,7 @@ import Element.Background as Background
 import Element.Input as Input
 import Html exposing (Html)
 import Http
-import Json.Decode exposing (Decoder, at, field, index, list, map3, string)
+import Json.Decode exposing (Decoder, at, field, index, list, map4, string)
 import Style exposing (Style(..), styling)
 import Url.Builder
 
@@ -34,7 +34,7 @@ type alias Model =
 
 
 type alias CardInfo =
-    { name : String, manaCost : Maybe String, convertedManaCost : Maybe Int }
+    { name : String, manaCost : Maybe String, convertedManaCost : Maybe Int, cardType : String }
 
 
 init : () -> ( Model, Cmd Msg )
@@ -108,7 +108,11 @@ update msg model =
                             (\n ->
                                 case n.convertedManaCost of
                                     Just num ->
-                                        num
+                                        if num == 0 && n.cardType == "Land" then
+                                            -1
+
+                                        else
+                                            num
 
                                     Nothing ->
                                         -1
@@ -167,7 +171,7 @@ getCardImageFromName name =
 
 responseDecoder : Decoder CardInfo
 responseDecoder =
-    map3 CardInfo
+    map4 CardInfo
         (at
             [ "card", "name" ]
             Json.Decode.string
@@ -180,6 +184,10 @@ responseDecoder =
             [ "card", "cmc" ]
             (Json.Decode.maybe Json.Decode.int)
         )
+        (at
+            [ "card", "type" ]
+            Json.Decode.string
+        )
 
 
 cardsListHeadImgUrlDecoder : Decoder String
@@ -191,10 +199,11 @@ cardsListDecoder : Decoder (List CardInfo)
 cardsListDecoder =
     field "cards"
         (list
-            (map3 CardInfo
+            (map4 CardInfo
                 (field "name" string)
                 (Json.Decode.maybe (field "manaCost" string))
                 (Json.Decode.maybe (field "cmc" Json.Decode.int))
+                (field "type" string)
             )
         )
 
