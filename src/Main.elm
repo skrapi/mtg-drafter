@@ -1,9 +1,9 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, div, img, input, text)
+import Html exposing (Html, button, div, img, input, text)
 import Html.Attributes exposing (placeholder, src, style, type_, value, width)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode exposing (Decoder, at, field, index, list, map, string)
 import Url.Builder
@@ -27,6 +27,7 @@ type alias Model =
     , cardInfo : Maybe CardInfo
     , cardImageUrl : Maybe String
     , searchResult : List String
+    , draftedCards : List String
     }
 
 
@@ -36,7 +37,7 @@ type alias CardInfo =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { searchName = Nothing, cardInfo = Nothing, searchResult = [], cardImageUrl = Nothing }, Cmd.none )
+    ( { searchName = Nothing, cardInfo = Nothing, searchResult = [], cardImageUrl = Nothing, draftedCards = [] }, Cmd.none )
 
 
 
@@ -48,6 +49,7 @@ type Msg
     | GotCardList (Result Http.Error (List String))
     | GotCardImage (Result Http.Error String)
     | GotSearchName String
+    | SelectCard String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -107,6 +109,9 @@ update msg model =
                     getCardListFromName name
             in
             ( { model | searchName = Just name }, resp )
+
+        SelectCard name ->
+            ( { model | draftedCards = List.append model.draftedCards [ name ] }, Cmd.none )
 
 
 cardsUrl : String -> String
@@ -184,6 +189,18 @@ subscriptions _ =
 -- VIEW
 
 
+cardNameButton : String -> Html Msg
+cardNameButton item =
+    div []
+        [ button [ onClick (SelectCard item) ] [ text item ] ]
+
+
+listItem : String -> Html Msg
+listItem item =
+    div []
+        [ text item ]
+
+
 view : Model -> Html Msg
 view model =
     div []
@@ -195,6 +212,8 @@ view model =
             , width 300
             ]
             []
+        , div [] (List.map listItem model.draftedCards)
+        , div [] (List.map cardNameButton model.searchResult)
         ]
 
 
