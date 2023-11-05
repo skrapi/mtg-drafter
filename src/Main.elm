@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Browser
 import Element exposing (text)
@@ -6,7 +6,8 @@ import Element.Background as Background
 import Element.Input as Input
 import Html exposing (Html)
 import Http
-import Json.Decode exposing (Decoder, at, field, index, list, map4, string)
+import Json.Decode as D
+import Json.Encode as E
 import Style exposing (Style(..), styling)
 import Url.Builder
 
@@ -15,9 +16,9 @@ import Url.Builder
 -- MAIN
 
 
-main : Program () Model Msg
+main : Program E.Value Model Msg
 main =
-    Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
+    Browser.element { init = init, update = updateWithStorage, subscriptions = subscriptions, view = view }
 
 
 
@@ -25,9 +26,7 @@ main =
 
 
 type alias Model =
-    { searchName : Maybe String
-    , cardInfo : Maybe CardInfo
-    , cardImageUrl : Maybe String
+    { searchName : String
     , searchResult : List CardInfo
     , draftedCards : List CardInfo
     }
@@ -37,9 +36,27 @@ type alias CardInfo =
     { name : String, manaCost : Maybe String, convertedManaCost : Maybe Int, cardType : String }
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
-    ( { searchName = Nothing, cardInfo = Nothing, searchResult = [], cardImageUrl = Nothing, draftedCards = [] }, Cmd.none )
+init : E.Value -> ( Model, Cmd Msg )
+init flags =
+    ( case D.decodeValue modelDecoder flags of
+        Ok model ->
+            let
+                _ =
+                    Debug.log "success in flags decoding" flags
+            in
+            model
+
+        Err err ->
+            let
+                _ =
+                    Debug.log "decode error" err
+            in
+            { searchName = ""
+            , searchResult = []
+            , draftedCards = []
+            }
+    , Cmd.none
+    )
 
 
 
@@ -47,9 +64,7 @@ init _ =
 
 
 type Msg
-    = GotCardName (Result Http.Error CardInfo)
-    | GotCardList (Result Http.Error (List CardInfo))
-    | GotCardImage (Result Http.Error String)
+    = GotCardList (Result Http.Error (List CardInfo))
     | GotSearchName String
     | SelectCard CardInfo
 
@@ -57,22 +72,6 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GotCardName result ->
-            case result of
-                Ok cardInfo ->
-                    ( { model | cardInfo = Just cardInfo }, Cmd.none )
-
-                Err _ ->
-                    ( { model | cardInfo = Nothing }, Cmd.none )
-
-        GotCardImage result ->
-            case result of
-                Ok cardImageUrl ->
-                    ( { model | cardImageUrl = Just cardImageUrl }, Cmd.none )
-
-                Err _ ->
-                    ( { model | cardInfo = Nothing }, Cmd.none )
-
         GotCardList result ->
             let
                 _ =
@@ -97,7 +96,7 @@ update msg model =
                     else
                         Cmd.none
             in
-            ( { model | searchName = Just name }, resp )
+            ( { model | searchName = name }, resp )
 
         SelectCard name ->
             let
@@ -145,14 +144,6 @@ cardsUrlByName name =
     Url.Builder.crossOrigin "https://api.magicthegathering.io/v1/cards" [] [ Url.Builder.string "name" name ]
 
 
-getCardInfoFromId : String -> Cmd Msg
-getCardInfoFromId id =
-    Http.get
-        { url = cardsUrl id
-        , expect = Http.expectJson GotCardName responseDecoder
-        }
-
-
 getCardListFromName : String -> Cmd Msg
 getCardListFromName name =
     Http.get
@@ -161,50 +152,38 @@ getCardListFromName name =
         }
 
 
-getCardImageFromName : String -> Cmd Msg
-getCardImageFromName name =
-    Http.get
-        { url = cardsUrlByName name
-        , expect = Http.expectJson GotCardImage cardsListHeadImgUrlDecoder
-        }
+
+-- responseDecoder : D.Decoder CardInfo
+-- responseDecoder =
+--     D.map4 CardInfo
+--         (D.at
+--             [ "card", "name" ]
+--             D.string
+--         )
+--         (D.at
+--             [ "card", "manaCost" ]
+--             (D.maybe D.string)
+--         )
+--         (D.at
+--             [ "card", "cmc" ]
+--             (D.maybe D.int)
+--         )
+--         (D.at
+--             [ "card", "type" ]
+--             D.string
+--         )
 
 
-responseDecoder : Decoder CardInfo
-responseDecoder =
-    map4 CardInfo
-        (at
-            [ "card", "name" ]
-            Json.Decode.string
-        )
-        (at
-            [ "card", "manaCost" ]
-            (Json.Decode.maybe Json.Decode.string)
-        )
-        (at
-            [ "card", "cmc" ]
-            (Json.Decode.maybe Json.Decode.int)
-        )
-        (at
-            [ "card", "type" ]
-            Json.Decode.string
-        )
-
-
-cardsListHeadImgUrlDecoder : Decoder String
+cardsListHeadImgUrlDecoder : D.Decoder String
 cardsListHeadImgUrlDecoder =
-    field "cards" (index 0 (field "imageUrl" string))
+    D.field "cards" (D.index 0 (D.field "imageUrl" D.string))
 
 
-cardsListDecoder : Decoder (List CardInfo)
+cardsListDecoder : D.Decoder (List CardInfo)
 cardsListDecoder =
-    field "cards"
-        (list
-            (map4 CardInfo
-                (field "name" string)
-                (Json.Decode.maybe (field "manaCost" string))
-                (Json.Decode.maybe (field "cmc" Json.Decode.int))
-                (field "type" string)
-            )
+    D.field "cards"
+        (D.list
+            cardInfoDecoder
         )
 
 
@@ -256,7 +235,7 @@ view model =
                     [ Input.text [ Element.width <| Element.px 300 ]
                         { placeholder = Just (Input.placeholder [] (mainText "type more than 4 chars"))
                         , onChange = GotSearchName
-                        , text = Maybe.withDefault "" model.searchName
+                        , text = model.searchName
                         , label = Input.labelLeft [] (mainText "Search")
                         }
                     , Element.column [ Element.padding 10, Element.spacing 7 ] (List.map cardNameButton model.searchResult)
@@ -279,3 +258,86 @@ view model =
 --     , width 300
 --     ]
 --     []
+-- PORTS
+
+
+port setStorage : E.Value -> Cmd msg
+
+
+
+-- We want to `setStorage` on every update, so this function adds
+-- the setStorage command on each step of the update function.
+--
+-- Check out index.html to see how this is handled on the JS side.
+--
+
+
+updateWithStorage : Msg -> Model -> ( Model, Cmd Msg )
+updateWithStorage msg oldModel =
+    let
+        ( newModel, cmds ) =
+            update msg oldModel
+
+        _ =
+            Debug.log "updated" E.encode 4 (encode newModel)
+    in
+    ( newModel
+    , Cmd.batch [ setStorage (encode newModel), cmds ]
+    )
+
+
+
+-- JSON ENCODE/DECODE
+-- type alias CardInfo =
+--     { name : String, manaCost : Maybe String, convertedManaCost : Maybe Int, cardType : String }
+
+
+encodeCardInfo : CardInfo -> E.Value
+encodeCardInfo cardInfo =
+    E.object
+        [ ( "name", E.string cardInfo.name )
+        , ( "manaCost", E.string <| Maybe.withDefault "" cardInfo.manaCost )
+        , ( "convertedManaCost", E.int <| Maybe.withDefault 0 cardInfo.convertedManaCost )
+        , ( "type", E.string cardInfo.cardType )
+        ]
+
+
+encode : Model -> E.Value
+encode model =
+    E.object
+        [ ( "searchName", E.string model.searchName )
+        , ( "searchResult", E.list encodeCardInfo model.searchResult )
+        , ( "draftedCards", E.list encodeCardInfo model.draftedCards )
+        ]
+
+
+cardInfoDecoder : D.Decoder CardInfo
+cardInfoDecoder =
+    D.map4 CardInfo
+        (D.field "name" D.string)
+        (D.maybe (D.field "manaCost" D.string))
+        (D.maybe (D.field "convertedManaCost" D.int))
+        (D.field "type" D.string)
+
+
+
+-- cardInfoFromStorageDecoder : D.Decoder CardInfo
+-- cardInfoFromStorageDecoder =
+--     D.map4 CardInfo
+--         (D.field "name" D.string)
+--         (D.maybe (D.field "manaCost" D.string))
+--         (D.maybe (D.field "convertedManaCost" D.int))
+--         (D.field "cardType" D.string)
+-- type alias Model =
+--     { searchName : String
+--     , searchResult : List CardInfo
+--     , draftedCards : List CardInfo
+--     }
+
+
+modelDecoder : D.Decoder Model
+modelDecoder =
+    D.map3 Model
+        (D.field "searchName" D.string)
+        (D.field "searchResult" <| D.list cardInfoDecoder)
+        (D.field "draftedCards" <| D.list cardInfoDecoder)
