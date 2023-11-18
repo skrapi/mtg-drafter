@@ -36,6 +36,14 @@ type alias CardInfo =
     { name : String, manaCost : Maybe String, cmc : Maybe Int, cardType : String }
 
 
+getManaCostList : CardInfo -> List Char
+getManaCostList cardInfo =
+    cardInfo.manaCost
+        |> Maybe.withDefault ""
+        |> String.toList
+        |> List.filter (\c -> c /= '{' || c /= '}')
+
+
 init : E.Value -> ( Model, Cmd Msg )
 init flags =
     ( case D.decodeValue modelDecoder flags of
