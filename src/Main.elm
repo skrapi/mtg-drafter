@@ -67,11 +67,15 @@ type Msg
     = GotCardList (Result Http.Error (List CardInfo))
     | GotSearchName String
     | SelectCard CardInfo
+    | ResetDeck
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        ResetDeck ->
+            ( { model | draftedCards = [] }, Cmd.none )
+
         GotCardList result ->
             let
                 _ =
@@ -201,6 +205,11 @@ cardNameButton card =
     Input.button [] { onPress = Just <| SelectCard card, label = mainText card.name }
 
 
+resetButton : Element.Element Msg
+resetButton =
+    Input.button [] { onPress = Just <| ResetDeck, label = mainText "Reset deck" }
+
+
 h1 : String -> Element.Element msg
 h1 val =
     Element.el (styling Style.Header)
@@ -230,6 +239,7 @@ view model =
         Element.column
             [ Element.width Element.fill, Element.padding 10, Element.spacing 7 ]
             [ h1 "MTG Drafter"
+            , resetButton
             , Element.row [ Element.padding 10, Element.spacing 7 ]
                 [ Element.column [ Element.padding 10, Element.spacing 7, Element.alignTop ]
                     [ Input.text [ Element.width <| Element.px 300 ]

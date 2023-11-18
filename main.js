@@ -6426,6 +6426,12 @@ var $author$project$Main$unique = function (list) {
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
+			case 'ResetDeck':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{draftedCards: _List_Nil}),
+					$elm$core$Platform$Cmd$none);
 			case 'GotCardList':
 				var result = msg.a;
 				var _v1 = A2($elm$core$Debug$log, 'result of card list', result);
@@ -12805,6 +12811,14 @@ var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
 var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
+var $author$project$Main$ResetDeck = {$: 'ResetDeck'};
+var $author$project$Main$resetButton = A2(
+	$mdgriffith$elm_ui$Element$Input$button,
+	_List_Nil,
+	{
+		label: $author$project$Main$mainText('Reset deck'),
+		onPress: $elm$core$Maybe$Just($author$project$Main$ResetDeck)
+	});
 var $mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
 	function (a, b, c) {
 		return {$: 'SpacingStyle', a: a, b: b, c: c};
@@ -13787,6 +13801,7 @@ var $author$project$Main$view = function (model) {
 			_List_fromArray(
 				[
 					$author$project$Main$h1('MTG Drafter'),
+					$author$project$Main$resetButton,
 					A2(
 					$mdgriffith$elm_ui$Element$row,
 					_List_fromArray(
