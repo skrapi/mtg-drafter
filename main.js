@@ -5395,8 +5395,8 @@ var $author$project$Main$Model = F3(
 		return {draftedCards: draftedCards, searchName: searchName, searchResult: searchResult};
 	});
 var $author$project$Main$CardInfo = F4(
-	function (name, manaCost, convertedManaCost, cardType) {
-		return {cardType: cardType, convertedManaCost: convertedManaCost, manaCost: manaCost, name: name};
+	function (name, manaCost, cmc, cardType) {
+		return {cardType: cardType, cmc: cmc, manaCost: manaCost, name: name};
 	});
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
@@ -5418,7 +5418,7 @@ var $author$project$Main$cardInfoDecoder = A5(
 	$elm$json$Json$Decode$maybe(
 		A2($elm$json$Json$Decode$field, 'manaCost', $elm$json$Json$Decode$string)),
 	$elm$json$Json$Decode$maybe(
-		A2($elm$json$Json$Decode$field, 'convertedManaCost', $elm$json$Json$Decode$int)),
+		A2($elm$json$Json$Decode$field, 'cmc', $elm$json$Json$Decode$int)),
 	A2($elm$json$Json$Decode$field, 'type', $elm$json$Json$Decode$string));
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$json$Json$Decode$map3 = _Json_map3;
@@ -5493,9 +5493,9 @@ var $author$project$Main$encodeCardInfo = function (cardInfo) {
 				$elm$json$Json$Encode$string(
 					A2($elm$core$Maybe$withDefault, '', cardInfo.manaCost))),
 				_Utils_Tuple2(
-				'convertedManaCost',
+				'cmc',
 				$elm$json$Json$Encode$int(
-					A2($elm$core$Maybe$withDefault, 0, cardInfo.convertedManaCost))),
+					A2($elm$core$Maybe$withDefault, 0, cardInfo.cmc))),
 				_Utils_Tuple2(
 				'type',
 				$elm$json$Json$Encode$string(cardInfo.cardType))
@@ -6461,7 +6461,7 @@ var $author$project$Main$update = F2(
 				var draftList = A2(
 					$elm$core$List$sortBy,
 					function (n) {
-						var _v4 = n.convertedManaCost;
+						var _v4 = n.cmc;
 						if (_v4.$ === 'Just') {
 							var num = _v4.a;
 							return ((!num) && (n.cardType === 'Land')) ? (-1) : num;
@@ -12372,7 +12372,7 @@ var $author$project$Main$cardDisplay = function (card) {
 				$author$project$Main$mainText('  -  '),
 				$author$project$Main$mainText(
 				$elm$core$String$fromInt(
-					A2($elm$core$Maybe$withDefault, 0, card.convertedManaCost))),
+					A2($elm$core$Maybe$withDefault, 0, card.cmc))),
 				$author$project$Main$mainText('  -  '),
 				$author$project$Main$mainText(
 				A2($elm$core$Maybe$withDefault, '', card.manaCost))

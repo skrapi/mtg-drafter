@@ -33,7 +33,7 @@ type alias Model =
 
 
 type alias CardInfo =
-    { name : String, manaCost : Maybe String, convertedManaCost : Maybe Int, cardType : String }
+    { name : String, manaCost : Maybe String, cmc : Maybe Int, cardType : String }
 
 
 init : E.Value -> ( Model, Cmd Msg )
@@ -109,7 +109,7 @@ update msg model =
                         |> List.append model.draftedCards
                         |> List.sortBy
                             (\n ->
-                                case n.convertedManaCost of
+                                case n.cmc of
                                     Just num ->
                                         if num == 0 && n.cardType == "Land" then
                                             -1
@@ -227,7 +227,7 @@ cardDisplay card =
     Element.row [ Element.width Element.fill ]
         [ mainText card.name
         , mainText "  -  "
-        , mainText (String.fromInt (Maybe.withDefault 0 card.convertedManaCost))
+        , mainText (String.fromInt (Maybe.withDefault 0 card.cmc))
         , mainText "  -  "
         , mainText <| Maybe.withDefault "" card.manaCost
         ]
@@ -299,7 +299,7 @@ updateWithStorage msg oldModel =
 
 -- JSON ENCODE/DECODE
 -- type alias CardInfo =
---     { name : String, manaCost : Maybe String, convertedManaCost : Maybe Int, cardType : String }
+--     { name : String, manaCost : Maybe String, cmc : Maybe Int, cardType : String }
 
 
 encodeCardInfo : CardInfo -> E.Value
@@ -307,7 +307,7 @@ encodeCardInfo cardInfo =
     E.object
         [ ( "name", E.string cardInfo.name )
         , ( "manaCost", E.string <| Maybe.withDefault "" cardInfo.manaCost )
-        , ( "convertedManaCost", E.int <| Maybe.withDefault 0 cardInfo.convertedManaCost )
+        , ( "cmc", E.int <| Maybe.withDefault 0 cardInfo.cmc )
         , ( "type", E.string cardInfo.cardType )
         ]
 
@@ -326,7 +326,7 @@ cardInfoDecoder =
     D.map4 CardInfo
         (D.field "name" D.string)
         (D.maybe (D.field "manaCost" D.string))
-        (D.maybe (D.field "convertedManaCost" D.int))
+        (D.maybe (D.field "cmc" D.int))
         (D.field "type" D.string)
 
 
@@ -336,7 +336,7 @@ cardInfoDecoder =
 --     D.map4 CardInfo
 --         (D.field "name" D.string)
 --         (D.maybe (D.field "manaCost" D.string))
---         (D.maybe (D.field "convertedManaCost" D.int))
+--         (D.maybe (D.field "cmc" D.int))
 --         (D.field "cardType" D.string)
 -- type alias Model =
 --     { searchName : String
