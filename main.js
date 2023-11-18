@@ -11969,7 +11969,7 @@ var $mdgriffith$elm_ui$Element$rgba255 = F4(
 	function (red, green, blue, a) {
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, a);
 	});
-var $author$project$Style$colorPalette = function (color) {
+var $author$project$Style$colorPaletteToColor = function (color) {
 	switch (color.$) {
 		case 'Primary':
 			return A4($mdgriffith$elm_ui$Element$rgba255, 100, 100, 100, 1);
@@ -11983,8 +11983,18 @@ var $author$project$Style$colorPalette = function (color) {
 			return A4($mdgriffith$elm_ui$Element$rgba255, 193, 73, 83, 1);
 		case 'Teal':
 			return A4($mdgriffith$elm_ui$Element$rgba255, 96, 150, 150, 1);
-		default:
+		case 'Yellow':
 			return A4($mdgriffith$elm_ui$Element$rgba255, 239, 187, 103, 1);
+		case 'MtgRed':
+			return A4($mdgriffith$elm_ui$Element$rgba255, 211, 32, 42, 1);
+		case 'MtgBlue':
+			return A4($mdgriffith$elm_ui$Element$rgba255, 14, 104, 171, 1);
+		case 'MtgWhite':
+			return A4($mdgriffith$elm_ui$Element$rgba255, 249, 250, 244, 1);
+		case 'MtgBlack':
+			return A4($mdgriffith$elm_ui$Element$rgba255, 21, 11, 0, 1);
+		default:
+			return A4($mdgriffith$elm_ui$Element$rgba255, 0, 115, 62, 1);
 	}
 };
 var $mdgriffith$elm_ui$Internal$Model$FontFamily = F2(
@@ -12252,7 +12262,7 @@ var $author$project$Style$styling = function (style) {
 			return _List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$Font$color(
-					$author$project$Style$colorPalette($author$project$Style$PrimaryLight)),
+					$author$project$Style$colorPaletteToColor($author$project$Style$PrimaryLight)),
 					$mdgriffith$elm_ui$Element$Font$size(36),
 					$mdgriffith$elm_ui$Element$Font$family(
 					_List_fromArray(
@@ -12265,7 +12275,7 @@ var $author$project$Style$styling = function (style) {
 			return _List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$Font$color(
-					$author$project$Style$colorPalette($author$project$Style$PrimaryLight)),
+					$author$project$Style$colorPaletteToColor($author$project$Style$PrimaryLight)),
 					$mdgriffith$elm_ui$Element$Font$size(22),
 					$mdgriffith$elm_ui$Element$Font$heavy,
 					$mdgriffith$elm_ui$Element$Font$family(
@@ -12280,7 +12290,7 @@ var $author$project$Style$styling = function (style) {
 			return _List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$Font$color(
-					$author$project$Style$colorPalette($author$project$Style$PrimaryLight)),
+					$author$project$Style$colorPaletteToColor($author$project$Style$PrimaryLight)),
 					$mdgriffith$elm_ui$Element$Font$size(18),
 					$mdgriffith$elm_ui$Element$Font$medium,
 					$mdgriffith$elm_ui$Element$Font$family(
@@ -12294,7 +12304,7 @@ var $author$project$Style$styling = function (style) {
 			return _List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$Font$color(
-					$author$project$Style$colorPalette($author$project$Style$PrimaryLight)),
+					$author$project$Style$colorPaletteToColor($author$project$Style$PrimaryLight)),
 					$mdgriffith$elm_ui$Element$Font$size(18),
 					$mdgriffith$elm_ui$Element$Font$medium,
 					$mdgriffith$elm_ui$Element$Font$family(
@@ -12307,14 +12317,14 @@ var $author$project$Style$styling = function (style) {
 					_List_fromArray(
 						[
 							$mdgriffith$elm_ui$Element$Font$color(
-							$author$project$Style$colorPalette($author$project$Style$Yellow))
+							$author$project$Style$colorPaletteToColor($author$project$Style$Yellow))
 						]))
 				]);
 		default:
 			return _List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$Font$color(
-					$author$project$Style$colorPalette($author$project$Style$PrimaryLight)),
+					$author$project$Style$colorPaletteToColor($author$project$Style$PrimaryLight)),
 					$mdgriffith$elm_ui$Element$Font$size(16),
 					$mdgriffith$elm_ui$Element$Font$light,
 					$mdgriffith$elm_ui$Element$Font$family(
@@ -12571,6 +12581,132 @@ var $author$project$Main$h1 = function (val) {
 		$author$project$Style$styling($author$project$Style$Header),
 		$mdgriffith$elm_ui$Element$text(val));
 };
+var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
+var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
+var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
+var $author$project$Icons$Icon = function (a) {
+	return {$: 'Icon', a: a};
+};
+var $author$project$Style$MtgWhite = {$: 'MtgWhite'};
+var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
+var $author$project$Style$colorPaletteToHex = function (color) {
+	switch (color.$) {
+		case 'Primary':
+			return '#646464';
+		case 'PrimaryDark':
+			return '#2D2D2A';
+		case 'PrimaryLight':
+			return '#C8C8C8';
+		case 'SecondaryDark':
+			return '#4C4C47';
+		case 'Red':
+			return '#C14953';
+		case 'Teal':
+			return '#609696';
+		case 'Yellow':
+			return '#EFBB67';
+		case 'MtgRed':
+			return '#D3202A';
+		case 'MtgBlue':
+			return '#0E68AB';
+		case 'MtgWhite':
+			return '#F9FAF4';
+		case 'MtgBlack':
+			return '#150B00';
+		default:
+			return '#00733E';
+	}
+};
+var $elm$svg$Svg$Attributes$cx = _VirtualDom_attribute('cx');
+var $elm$svg$Svg$Attributes$cy = _VirtualDom_attribute('cy');
+var $elm$svg$Svg$Attributes$dominantBaseline = _VirtualDom_attribute('dominant-baseline');
+var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var $elm$svg$Svg$Attributes$r = _VirtualDom_attribute('r');
+var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
+var $elm$svg$Svg$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$svg$Svg$Attributes$textAnchor = _VirtualDom_attribute('text-anchor');
+var $elm$svg$Svg$text_ = $elm$svg$Svg$trustedNode('text');
+var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
+var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
+var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
+var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
+var $author$project$Icons$numberedCircle = function (num) {
+	var size = '20';
+	var rad = '40%';
+	var pos = '50%';
+	return $author$project$Icons$Icon(
+		A2(
+			$elm$svg$Svg$svg,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$width(size),
+					$elm$svg$Svg$Attributes$height(size),
+					$elm$svg$Svg$Attributes$viewBox(
+					A2(
+						$elm$core$String$join,
+						' ',
+						_List_fromArray(
+							['0', '0', size, size])))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$svg$Svg$circle,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$fill(
+							$author$project$Style$colorPaletteToHex($author$project$Style$MtgWhite)),
+							$elm$svg$Svg$Attributes$cy(pos),
+							$elm$svg$Svg$Attributes$cx(pos),
+							$elm$svg$Svg$Attributes$r(rad)
+						]),
+					_List_Nil),
+					A2(
+					$elm$svg$Svg$text_,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$x(pos),
+							$elm$svg$Svg$Attributes$y(pos),
+							$elm$svg$Svg$Attributes$textAnchor('middle'),
+							$elm$svg$Svg$Attributes$dominantBaseline('middle')
+						]),
+					_List_fromArray(
+						[
+							$elm$svg$Svg$text(
+							$elm$core$String$fromInt(num))
+						]))
+				])));
+};
+var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
+var $elm$html$Html$map = $elm$virtual_dom$VirtualDom$map;
+var $author$project$Icons$toHtml = function (_v0) {
+	var icon = _v0.a;
+	return A2($elm$html$Html$map, $elm$core$Basics$never, icon);
+};
+var $author$project$Main$icon = A2(
+	$mdgriffith$elm_ui$Element$el,
+	_List_fromArray(
+		[
+			$mdgriffith$elm_ui$Element$centerX,
+			$mdgriffith$elm_ui$Element$centerY,
+			$mdgriffith$elm_ui$Element$width(
+			$mdgriffith$elm_ui$Element$px(600))
+		]),
+	$mdgriffith$elm_ui$Element$html(
+		$author$project$Icons$toHtml(
+			$author$project$Icons$numberedCircle(1))));
 var $mdgriffith$elm_ui$Element$Input$Label = F3(
 	function (a, b, c) {
 		return {$: 'Label', a: a, b: b, c: c};
@@ -12807,10 +12943,6 @@ var $mdgriffith$elm_ui$Element$Input$Placeholder = F2(
 		return {$: 'Placeholder', a: a, b: b};
 	});
 var $mdgriffith$elm_ui$Element$Input$placeholder = $mdgriffith$elm_ui$Element$Input$Placeholder;
-var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
 var $author$project$Main$ResetDeck = {$: 'ResetDeck'};
 var $author$project$Main$resetButton = A2(
 	$mdgriffith$elm_ui$Element$Input$button,
@@ -13524,11 +13656,6 @@ var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$html$Html$Attributes$spellcheck = $elm$html$Html$Attributes$boolProperty('spellcheck');
 var $mdgriffith$elm_ui$Element$Input$spellcheck = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Attributes$spellcheck);
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
-var $elm$core$Basics$always = F2(
-	function (a, _v0) {
-		return a;
-	});
-var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $mdgriffith$elm_ui$Element$Input$value = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Attr, $elm$html$Html$Attributes$value);
 var $mdgriffith$elm_ui$Element$Input$textHelper = F3(
@@ -13788,7 +13915,7 @@ var $author$project$Main$view = function (model) {
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$Background$color(
-				$author$project$Style$colorPalette($author$project$Style$PrimaryDark))
+				$author$project$Style$colorPaletteToColor($author$project$Style$PrimaryDark))
 			]),
 		A2(
 			$mdgriffith$elm_ui$Element$column,
@@ -13802,6 +13929,7 @@ var $author$project$Main$view = function (model) {
 				[
 					$author$project$Main$h1('MTG Drafter'),
 					$author$project$Main$resetButton,
+					$author$project$Main$icon,
 					A2(
 					$mdgriffith$elm_ui$Element$row,
 					_List_fromArray(

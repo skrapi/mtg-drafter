@@ -6,6 +6,7 @@ import Element.Background as Background
 import Element.Input as Input
 import Html exposing (Html)
 import Http
+import Icons exposing (toHtml)
 import Json.Decode as D
 import Json.Encode as E
 import Style exposing (Style(..), styling)
@@ -208,6 +209,17 @@ subscriptions _ =
 -- VIEW
 
 
+icon : Element.Element msg
+icon =
+    Element.el
+        [ Element.centerX
+        , Element.centerY
+        , Element.width <| Element.px 600
+        ]
+    <|
+        Element.html (toHtml <| Icons.numberedCircle 1)
+
+
 cardNameButton : CardInfo -> Element.Element Msg
 cardNameButton card =
     Input.button [] { onPress = Just <| SelectCard card, label = mainText card.name }
@@ -243,11 +255,12 @@ cardDisplay card =
 
 view : Model -> Html Msg
 view model =
-    Element.layout [ Background.color <| Style.colorPalette Style.PrimaryDark ] <|
+    Element.layout [ Background.color <| Style.colorPaletteToColor Style.PrimaryDark ] <|
         Element.column
             [ Element.width Element.fill, Element.padding 10, Element.spacing 7 ]
             [ h1 "MTG Drafter"
             , resetButton
+            , icon
             , Element.row [ Element.padding 10, Element.spacing 7 ]
                 [ Element.column [ Element.padding 10, Element.spacing 7, Element.alignTop ]
                     [ Input.text [ Element.width <| Element.px 300 ]
