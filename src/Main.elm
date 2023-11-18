@@ -39,10 +39,17 @@ type alias CardInfo =
 
 getManaCostList : CardInfo -> List Char
 getManaCostList cardInfo =
-    cardInfo.manaCost
-        |> Maybe.withDefault ""
-        |> String.toList
-        |> List.filter (\c -> c /= '{' || c /= '}')
+    let
+        res =
+            cardInfo.manaCost
+                |> Maybe.withDefault ""
+                |> String.toList
+                |> List.filter (\c -> c /= '{' && c /= '}')
+
+        _ =
+            Debug.log "res" res
+    in
+    res
 
 
 init : E.Value -> ( Model, Cmd Msg )
@@ -209,15 +216,46 @@ subscriptions _ =
 -- VIEW
 
 
-icon : Element.Element msg
-icon =
+letterToColor char =
+    let
+        _ =
+            Debug.log "char" char
+    in
+    case char of
+        'W' ->
+            Style.MtgWhite
+
+        'U' ->
+            Style.MtgBlue
+
+        'B' ->
+            Style.MtgBlack
+
+        'G' ->
+            Style.MtgGreen
+
+        'R' ->
+            Style.MtgRed
+
+        _ ->
+            Debug.todo "branch '_' not implemented"
+
+
+manaIcon : Char -> Element.Element msg
+manaIcon char =
+    let
+        html =
+            if Char.isDigit char then
+                Element.html (toHtml <| Icons.numberedCircle <| Maybe.withDefault 0 (String.toInt (String.fromChar char)))
+
+            else
+                Element.html (toHtml <| Icons.circle <| letterToColor char)
+    in
     Element.el
         [ Element.centerX
         , Element.centerY
-        , Element.width <| Element.px 600
         ]
-    <|
-        Element.html (toHtml <| Icons.numberedCircle 1)
+        html
 
 
 cardNameButton : CardInfo -> Element.Element Msg
@@ -249,7 +287,7 @@ cardDisplay card =
         , mainText "  -  "
         , mainText (String.fromInt (Maybe.withDefault 0 card.cmc))
         , mainText "  -  "
-        , mainText <| Maybe.withDefault "" card.manaCost
+        , Element.row [] <| List.map manaIcon <| getManaCostList card
         ]
 
 
@@ -260,7 +298,6 @@ view model =
             [ Element.width Element.fill, Element.padding 10, Element.spacing 7 ]
             [ h1 "MTG Drafter"
             , resetButton
-            , icon
             , Element.row [ Element.padding 10, Element.spacing 7 ]
                 [ Element.column [ Element.padding 10, Element.spacing 7, Element.alignTop ]
                     [ Input.text [ Element.width <| Element.px 300 ]

@@ -6516,6 +6516,37 @@ var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 	return {$: 'Fill', a: a};
 };
 var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $elm$core$String$foldr = _String_foldr;
+var $elm$core$String$toList = function (string) {
+	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
+};
+var $author$project$Main$getManaCostList = function (cardInfo) {
+	var res = A2(
+		$elm$core$List$filter,
+		function (c) {
+			return (!_Utils_eq(
+				c,
+				_Utils_chr('{'))) && (!_Utils_eq(
+				c,
+				_Utils_chr('}')));
+		},
+		$elm$core$String$toList(
+			A2($elm$core$Maybe$withDefault, '', cardInfo.manaCost)));
+	var _v0 = A2($elm$core$Debug$log, 'res', res);
+	return res;
+};
 var $author$project$Style$MainText = {$: 'MainText'};
 var $mdgriffith$elm_ui$Internal$Model$Unkeyed = function (a) {
 	return {$: 'Unkeyed', a: a};
@@ -9803,17 +9834,6 @@ var $mdgriffith$elm_ui$Internal$Model$adjust = F3(
 	function (size, height, vertical) {
 		return {height: height / size, size: size, vertical: vertical};
 	});
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
 var $elm$core$List$maximum = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -9834,7 +9854,6 @@ var $elm$core$List$minimum = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $elm$core$Basics$neq = _Utils_notEqual;
 var $mdgriffith$elm_ui$Internal$Model$convertAdjustment = function (adjustment) {
 	var lines = _List_fromArray(
 		[adjustment.capital, adjustment.baseline, adjustment.descender, adjustment.lowercase]);
@@ -12345,6 +12364,203 @@ var $author$project$Main$mainText = function (val) {
 		$author$project$Style$styling($author$project$Style$MainText),
 		$mdgriffith$elm_ui$Element$text(val));
 };
+var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
+var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
+var $author$project$Icons$Icon = function (a) {
+	return {$: 'Icon', a: a};
+};
+var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
+var $author$project$Style$colorPaletteToHex = function (color) {
+	switch (color.$) {
+		case 'Primary':
+			return '#646464';
+		case 'PrimaryDark':
+			return '#2D2D2A';
+		case 'PrimaryLight':
+			return '#C8C8C8';
+		case 'SecondaryDark':
+			return '#4C4C47';
+		case 'Red':
+			return '#C14953';
+		case 'Teal':
+			return '#609696';
+		case 'Yellow':
+			return '#EFBB67';
+		case 'MtgRed':
+			return '#D3202A';
+		case 'MtgBlue':
+			return '#0E68AB';
+		case 'MtgWhite':
+			return '#F9FAF4';
+		case 'MtgBlack':
+			return '#150B00';
+		default:
+			return '#00733E';
+	}
+};
+var $elm$svg$Svg$Attributes$cx = _VirtualDom_attribute('cx');
+var $elm$svg$Svg$Attributes$cy = _VirtualDom_attribute('cy');
+var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var $elm$svg$Svg$Attributes$r = _VirtualDom_attribute('r');
+var $elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
+var $elm$svg$Svg$Attributes$strokeWidth = _VirtualDom_attribute('stroke-width');
+var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
+var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
+var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
+var $author$project$Icons$circle = function (color) {
+	var size = '20';
+	var rad = '8';
+	var pos = '10';
+	return $author$project$Icons$Icon(
+		A2(
+			$elm$svg$Svg$svg,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$width(size),
+					$elm$svg$Svg$Attributes$height(size),
+					$elm$svg$Svg$Attributes$viewBox(
+					A2(
+						$elm$core$String$join,
+						' ',
+						_List_fromArray(
+							['0', '0', size, size])))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$svg$Svg$circle,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$fill(
+							$author$project$Style$colorPaletteToHex(color)),
+							$elm$svg$Svg$Attributes$stroke(
+							$author$project$Style$colorPaletteToHex(color)),
+							$elm$svg$Svg$Attributes$strokeWidth('1'),
+							$elm$svg$Svg$Attributes$cy(pos),
+							$elm$svg$Svg$Attributes$cx(pos),
+							$elm$svg$Svg$Attributes$r(rad)
+						]),
+					_List_Nil)
+				])));
+};
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
+var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
+var $author$project$Style$MtgBlack = {$: 'MtgBlack'};
+var $author$project$Style$MtgBlue = {$: 'MtgBlue'};
+var $author$project$Style$MtgGreen = {$: 'MtgGreen'};
+var $author$project$Style$MtgRed = {$: 'MtgRed'};
+var $author$project$Style$MtgWhite = {$: 'MtgWhite'};
+var $elm$core$Debug$todo = _Debug_todo;
+var $author$project$Main$letterToColor = function (_char) {
+	var _v0 = A2($elm$core$Debug$log, 'char', _char);
+	switch (_char.valueOf()) {
+		case 'W':
+			return $author$project$Style$MtgWhite;
+		case 'U':
+			return $author$project$Style$MtgBlue;
+		case 'B':
+			return $author$project$Style$MtgBlack;
+		case 'G':
+			return $author$project$Style$MtgGreen;
+		case 'R':
+			return $author$project$Style$MtgRed;
+		default:
+			return _Debug_todo(
+				'Main',
+				{
+					start: {line: 241, column: 13},
+					end: {line: 241, column: 23}
+				})('branch \'_\' not implemented');
+	}
+};
+var $elm$svg$Svg$Attributes$dominantBaseline = _VirtualDom_attribute('dominant-baseline');
+var $elm$svg$Svg$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$svg$Svg$Attributes$textAnchor = _VirtualDom_attribute('text-anchor');
+var $elm$svg$Svg$text_ = $elm$svg$Svg$trustedNode('text');
+var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
+var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
+var $author$project$Icons$numberedCircle = function (num) {
+	var size = '20';
+	var rad = '40%';
+	var pos = '50%';
+	return $author$project$Icons$Icon(
+		A2(
+			$elm$svg$Svg$svg,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$width(size),
+					$elm$svg$Svg$Attributes$height(size),
+					$elm$svg$Svg$Attributes$viewBox(
+					A2(
+						$elm$core$String$join,
+						' ',
+						_List_fromArray(
+							['0', '0', size, size])))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$svg$Svg$circle,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$fill(
+							$author$project$Style$colorPaletteToHex($author$project$Style$MtgWhite)),
+							$elm$svg$Svg$Attributes$cy(pos),
+							$elm$svg$Svg$Attributes$cx(pos),
+							$elm$svg$Svg$Attributes$r(rad)
+						]),
+					_List_Nil),
+					A2(
+					$elm$svg$Svg$text_,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$x(pos),
+							$elm$svg$Svg$Attributes$y(pos),
+							$elm$svg$Svg$Attributes$textAnchor('middle'),
+							$elm$svg$Svg$Attributes$dominantBaseline('middle')
+						]),
+					_List_fromArray(
+						[
+							$elm$svg$Svg$text(
+							$elm$core$String$fromInt(num))
+						]))
+				])));
+};
+var $elm$html$Html$map = $elm$virtual_dom$VirtualDom$map;
+var $author$project$Icons$toHtml = function (_v0) {
+	var icon = _v0.a;
+	return A2($elm$html$Html$map, $elm$core$Basics$never, icon);
+};
+var $author$project$Main$manaIcon = function (_char) {
+	var html = $elm$core$Char$isDigit(_char) ? $mdgriffith$elm_ui$Element$html(
+		$author$project$Icons$toHtml(
+			$author$project$Icons$numberedCircle(
+				A2(
+					$elm$core$Maybe$withDefault,
+					0,
+					$elm$core$String$toInt(
+						$elm$core$String$fromChar(_char)))))) : $mdgriffith$elm_ui$Element$html(
+		$author$project$Icons$toHtml(
+			$author$project$Icons$circle(
+				$author$project$Main$letterToColor(_char))));
+	return A2(
+		$mdgriffith$elm_ui$Element$el,
+		_List_fromArray(
+			[$mdgriffith$elm_ui$Element$centerX, $mdgriffith$elm_ui$Element$centerY]),
+		html);
+};
 var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
 var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
 var $mdgriffith$elm_ui$Internal$Model$htmlClass = function (cls) {
@@ -12384,8 +12600,13 @@ var $author$project$Main$cardDisplay = function (card) {
 				$elm$core$String$fromInt(
 					A2($elm$core$Maybe$withDefault, 0, card.cmc))),
 				$author$project$Main$mainText('  -  '),
-				$author$project$Main$mainText(
-				A2($elm$core$Maybe$withDefault, '', card.manaCost))
+				A2(
+				$mdgriffith$elm_ui$Element$row,
+				_List_Nil,
+				A2(
+					$elm$core$List$map,
+					$author$project$Main$manaIcon,
+					$author$project$Main$getManaCostList(card)))
 			]));
 };
 var $author$project$Main$SelectCard = function (a) {
@@ -12581,132 +12802,6 @@ var $author$project$Main$h1 = function (val) {
 		$author$project$Style$styling($author$project$Style$Header),
 		$mdgriffith$elm_ui$Element$text(val));
 };
-var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
-var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
-var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
-var $elm$core$Basics$always = F2(
-	function (a, _v0) {
-		return a;
-	});
-var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
-var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
-var $author$project$Icons$Icon = function (a) {
-	return {$: 'Icon', a: a};
-};
-var $author$project$Style$MtgWhite = {$: 'MtgWhite'};
-var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
-var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
-var $author$project$Style$colorPaletteToHex = function (color) {
-	switch (color.$) {
-		case 'Primary':
-			return '#646464';
-		case 'PrimaryDark':
-			return '#2D2D2A';
-		case 'PrimaryLight':
-			return '#C8C8C8';
-		case 'SecondaryDark':
-			return '#4C4C47';
-		case 'Red':
-			return '#C14953';
-		case 'Teal':
-			return '#609696';
-		case 'Yellow':
-			return '#EFBB67';
-		case 'MtgRed':
-			return '#D3202A';
-		case 'MtgBlue':
-			return '#0E68AB';
-		case 'MtgWhite':
-			return '#F9FAF4';
-		case 'MtgBlack':
-			return '#150B00';
-		default:
-			return '#00733E';
-	}
-};
-var $elm$svg$Svg$Attributes$cx = _VirtualDom_attribute('cx');
-var $elm$svg$Svg$Attributes$cy = _VirtualDom_attribute('cy');
-var $elm$svg$Svg$Attributes$dominantBaseline = _VirtualDom_attribute('dominant-baseline');
-var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
-var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
-var $elm$svg$Svg$Attributes$r = _VirtualDom_attribute('r');
-var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
-var $elm$svg$Svg$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$svg$Svg$Attributes$textAnchor = _VirtualDom_attribute('text-anchor');
-var $elm$svg$Svg$text_ = $elm$svg$Svg$trustedNode('text');
-var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
-var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
-var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
-var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
-var $author$project$Icons$numberedCircle = function (num) {
-	var size = '20';
-	var rad = '40%';
-	var pos = '50%';
-	return $author$project$Icons$Icon(
-		A2(
-			$elm$svg$Svg$svg,
-			_List_fromArray(
-				[
-					$elm$svg$Svg$Attributes$width(size),
-					$elm$svg$Svg$Attributes$height(size),
-					$elm$svg$Svg$Attributes$viewBox(
-					A2(
-						$elm$core$String$join,
-						' ',
-						_List_fromArray(
-							['0', '0', size, size])))
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$svg$Svg$circle,
-					_List_fromArray(
-						[
-							$elm$svg$Svg$Attributes$fill(
-							$author$project$Style$colorPaletteToHex($author$project$Style$MtgWhite)),
-							$elm$svg$Svg$Attributes$cy(pos),
-							$elm$svg$Svg$Attributes$cx(pos),
-							$elm$svg$Svg$Attributes$r(rad)
-						]),
-					_List_Nil),
-					A2(
-					$elm$svg$Svg$text_,
-					_List_fromArray(
-						[
-							$elm$svg$Svg$Attributes$x(pos),
-							$elm$svg$Svg$Attributes$y(pos),
-							$elm$svg$Svg$Attributes$textAnchor('middle'),
-							$elm$svg$Svg$Attributes$dominantBaseline('middle')
-						]),
-					_List_fromArray(
-						[
-							$elm$svg$Svg$text(
-							$elm$core$String$fromInt(num))
-						]))
-				])));
-};
-var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
-var $elm$html$Html$map = $elm$virtual_dom$VirtualDom$map;
-var $author$project$Icons$toHtml = function (_v0) {
-	var icon = _v0.a;
-	return A2($elm$html$Html$map, $elm$core$Basics$never, icon);
-};
-var $author$project$Main$icon = A2(
-	$mdgriffith$elm_ui$Element$el,
-	_List_fromArray(
-		[
-			$mdgriffith$elm_ui$Element$centerX,
-			$mdgriffith$elm_ui$Element$centerY,
-			$mdgriffith$elm_ui$Element$width(
-			$mdgriffith$elm_ui$Element$px(600))
-		]),
-	$mdgriffith$elm_ui$Element$html(
-		$author$project$Icons$toHtml(
-			$author$project$Icons$numberedCircle(1))));
 var $mdgriffith$elm_ui$Element$Input$Label = F3(
 	function (a, b, c) {
 		return {$: 'Label', a: a, b: b, c: c};
@@ -12943,6 +13038,10 @@ var $mdgriffith$elm_ui$Element$Input$Placeholder = F2(
 		return {$: 'Placeholder', a: a, b: b};
 	});
 var $mdgriffith$elm_ui$Element$Input$placeholder = $mdgriffith$elm_ui$Element$Input$Placeholder;
+var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
 var $author$project$Main$ResetDeck = {$: 'ResetDeck'};
 var $author$project$Main$resetButton = A2(
 	$mdgriffith$elm_ui$Element$Input$button,
@@ -13929,7 +14028,6 @@ var $author$project$Main$view = function (model) {
 				[
 					$author$project$Main$h1('MTG Drafter'),
 					$author$project$Main$resetButton,
-					$author$project$Main$icon,
 					A2(
 					$mdgriffith$elm_ui$Element$row,
 					_List_fromArray(
