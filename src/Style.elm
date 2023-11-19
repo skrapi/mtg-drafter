@@ -89,6 +89,7 @@ type ColorPalette
     | MtgWhite
     | MtgBlack
     | MtgGreen
+    | MtgGrey
 
 
 fontStack : MyFonts -> Font.Font
@@ -153,6 +154,9 @@ colorPaletteToColor color =
         MtgGreen ->
             rgba255 0 115 62 1
 
+        MtgGrey ->
+            rgba 80 76 75 1
+
 
 colorPaletteToHex : ColorPalette -> String
 colorPaletteToHex color =
@@ -192,3 +196,6 @@ colorPaletteToHex color =
 
         MtgGreen ->
             "#00733E"
+
+        MtgGrey ->
+            "#CCC2C0"

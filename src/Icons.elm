@@ -69,12 +69,12 @@ numberedCircle num =
         ]
         [ Svg.circle
             -- TODO remove this magic number, it should be primary dark
-            [ fill <| colorPaletteToHex MtgWhite
+            [ fill <| colorPaletteToHex MtgGrey
             , cy pos
             , cx pos
             , r rad
             ]
             []
-        , Svg.text_ [ x pos, y pos, textAnchor "middle", dominantBaseline "middle" ] [ Svg.text <| String.fromInt num ]
+        , Svg.text_ [ x pos, y pos, textAnchor "middle", dominantBaseline "middle", fontSize "16" ] [ Svg.text <| String.fromInt num ]
         ]
         |> Icon

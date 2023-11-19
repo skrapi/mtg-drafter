@@ -11984,6 +11984,7 @@ var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
 	function (a, b, c, d) {
 		return {$: 'Rgba', a: a, b: b, c: c, d: d};
 	});
+var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
 var $mdgriffith$elm_ui$Element$rgba255 = F4(
 	function (red, green, blue, a) {
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, a);
@@ -12012,8 +12013,10 @@ var $author$project$Style$colorPaletteToColor = function (color) {
 			return A4($mdgriffith$elm_ui$Element$rgba255, 249, 250, 244, 1);
 		case 'MtgBlack':
 			return A4($mdgriffith$elm_ui$Element$rgba255, 21, 11, 0, 1);
-		default:
+		case 'MtgGreen':
 			return A4($mdgriffith$elm_ui$Element$rgba255, 0, 115, 62, 1);
+		default:
+			return A4($mdgriffith$elm_ui$Element$rgba, 80, 76, 75, 1);
 	}
 };
 var $mdgriffith$elm_ui$Internal$Model$FontFamily = F2(
@@ -12397,8 +12400,10 @@ var $author$project$Style$colorPaletteToHex = function (color) {
 			return '#F9FAF4';
 		case 'MtgBlack':
 			return '#150B00';
-		default:
+		case 'MtgGreen':
 			return '#00733E';
+		default:
+			return '#CCC2C0';
 	}
 };
 var $elm$svg$Svg$Attributes$cx = _VirtualDom_attribute('cx');
@@ -12485,7 +12490,9 @@ var $author$project$Main$letterToColor = function (_char) {
 				})('branch \'_\' not implemented');
 	}
 };
+var $author$project$Style$MtgGrey = {$: 'MtgGrey'};
 var $elm$svg$Svg$Attributes$dominantBaseline = _VirtualDom_attribute('dominant-baseline');
+var $elm$svg$Svg$Attributes$fontSize = _VirtualDom_attribute('font-size');
 var $elm$svg$Svg$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$svg$Svg$Attributes$textAnchor = _VirtualDom_attribute('text-anchor');
 var $elm$svg$Svg$text_ = $elm$svg$Svg$trustedNode('text');
@@ -12516,7 +12523,7 @@ var $author$project$Icons$numberedCircle = function (num) {
 					_List_fromArray(
 						[
 							$elm$svg$Svg$Attributes$fill(
-							$author$project$Style$colorPaletteToHex($author$project$Style$MtgWhite)),
+							$author$project$Style$colorPaletteToHex($author$project$Style$MtgGrey)),
 							$elm$svg$Svg$Attributes$cy(pos),
 							$elm$svg$Svg$Attributes$cx(pos),
 							$elm$svg$Svg$Attributes$r(rad)
@@ -12529,7 +12536,8 @@ var $author$project$Icons$numberedCircle = function (num) {
 							$elm$svg$Svg$Attributes$x(pos),
 							$elm$svg$Svg$Attributes$y(pos),
 							$elm$svg$Svg$Attributes$textAnchor('middle'),
-							$elm$svg$Svg$Attributes$dominantBaseline('middle')
+							$elm$svg$Svg$Attributes$dominantBaseline('middle'),
+							$elm$svg$Svg$Attributes$fontSize('16')
 						]),
 					_List_fromArray(
 						[
@@ -13723,7 +13731,6 @@ var $mdgriffith$elm_ui$Element$alpha = function (o) {
 			transparency));
 };
 var $mdgriffith$elm_ui$Element$Input$charcoal = A3($mdgriffith$elm_ui$Element$rgb, 136 / 255, 138 / 255, 133 / 255);
-var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
 var $mdgriffith$elm_ui$Element$Input$renderPlaceholder = F3(
 	function (_v0, forPlaceholder, on) {
 		var placeholderAttrs = _v0.a;
