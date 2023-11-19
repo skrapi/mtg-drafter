@@ -216,6 +216,7 @@ subscriptions _ =
 -- VIEW
 
 
+letterToColor : Char -> Style.ColorPalette
 letterToColor char =
     let
         _ =
@@ -246,7 +247,12 @@ manaIcon char =
     let
         html =
             if Char.isDigit char then
-                Element.html (toHtml <| Icons.numberedCircle <| Maybe.withDefault 0 (String.toInt (String.fromChar char)))
+                String.fromChar char
+                    |> String.toInt
+                    |> Maybe.withDefault 0
+                    |> Icons.numberedCircle
+                    |> toHtml
+                    |> Element.html
 
             else
                 Element.html (toHtml <| Icons.circle <| letterToColor char)
