@@ -6491,7 +6491,7 @@ var $author$project$Main$update = F2(
 						{searchName: name}),
 					resp);
 			default:
-				var name = msg.a;
+				var card = msg.a;
 				var draftList = A2(
 					$elm$core$List$sortBy,
 					function (_v4) {
@@ -6509,7 +6509,7 @@ var $author$project$Main$update = F2(
 						model.draftedCards,
 						_List_fromArray(
 							[
-								_Utils_Tuple2(name, 1)
+								_Utils_Tuple2(card, 1)
 							])));
 				return _Utils_Tuple2(
 					_Utils_update(

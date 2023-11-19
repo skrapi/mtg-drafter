@@ -118,10 +118,10 @@ update msg model =
             in
             ( { model | searchName = name }, resp )
 
-        SelectCard name ->
+        SelectCard card ->
             let
                 draftList =
-                    [ ( name, 1 ) ]
+                    [ ( card, 1 ) ]
                         |> List.append model.draftedCards
                         |> List.sortBy
                             (\( n, _ ) ->
