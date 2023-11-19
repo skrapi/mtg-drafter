@@ -5560,6 +5560,27 @@ var $author$project$Main$encode = function (model) {
 			]));
 };
 var $author$project$Main$setStorage = _Platform_outgoingPort('setStorage', $elm$core$Basics$identity);
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
 var $elm$core$List$append = F2(
 	function (xs, ys) {
 		if (!ys.b) {
@@ -6414,27 +6435,6 @@ var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
 var $elm$core$List$sortBy = _List_sortBy;
-var $elm$core$List$any = F2(
-	function (isOkay, list) {
-		any:
-		while (true) {
-			if (!list.b) {
-				return false;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (isOkay(x)) {
-					return true;
-				} else {
-					var $temp$isOkay = isOkay,
-						$temp$list = xs;
-					isOkay = $temp$isOkay;
-					list = $temp$list;
-					continue any;
-				}
-			}
-		}
-	});
 var $elm$core$List$member = F2(
 	function (x, xs) {
 		return A2(
@@ -6493,6 +6493,27 @@ var $author$project$Main$update = F2(
 			default:
 				var card = msg.a;
 				var draftList = A2(
+					$elm$core$List$any,
+					function (_v6) {
+						var card_info = _v6.a;
+						var num = _v6.b;
+						return _Utils_eq(card_info, card);
+					},
+					model.draftedCards) ? A2(
+					$elm$core$List$map,
+					function (_v7) {
+						var card_info = _v7.a;
+						var num = _v7.b;
+						return _Utils_eq(card_info, card) ? _Utils_Tuple2(card_info, num + 1) : _Utils_Tuple2(card_info, num);
+					},
+					model.draftedCards) : A2(
+					$elm$core$List$append,
+					model.draftedCards,
+					_List_fromArray(
+						[
+							_Utils_Tuple2(card, 1)
+						]));
+				var sortedDraftList = A2(
 					$elm$core$List$sortBy,
 					function (_v4) {
 						var n = _v4.a;
@@ -6504,17 +6525,11 @@ var $author$project$Main$update = F2(
 							return -1;
 						}
 					},
-					A2(
-						$elm$core$List$append,
-						model.draftedCards,
-						_List_fromArray(
-							[
-								_Utils_Tuple2(card, 1)
-							])));
+					draftList);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{draftedCards: draftList}),
+						{draftedCards: sortedDraftList}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -12522,8 +12537,8 @@ var $author$project$Main$letterToColor = function (_char) {
 			return _Debug_todo(
 				'Main',
 				{
-					start: {line: 242, column: 13},
-					end: {line: 242, column: 23}
+					start: {line: 257, column: 13},
+					end: {line: 257, column: 23}
 				})('branch \'_\' not implemented');
 	}
 };

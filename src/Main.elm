@@ -121,8 +121,23 @@ update msg model =
         SelectCard card ->
             let
                 draftList =
-                    [ ( card, 1 ) ]
-                        |> List.append model.draftedCards
+                    if List.any (\( card_info, num ) -> card_info == card) model.draftedCards then
+                        List.map
+                            (\( card_info, num ) ->
+                                if card_info == card then
+                                    ( card_info, num + 1 )
+
+                                else
+                                    ( card_info, num )
+                            )
+                            model.draftedCards
+
+                    else
+                        [ ( card, 1 ) ]
+                            |> List.append model.draftedCards
+
+                sortedDraftList =
+                    draftList
                         |> List.sortBy
                             (\( n, _ ) ->
                                 case n.cmc of
@@ -137,7 +152,7 @@ update msg model =
                                         -1
                             )
             in
-            ( { model | draftedCards = draftList }, Cmd.none )
+            ( { model | draftedCards = sortedDraftList }, Cmd.none )
 
 
 unique : List a -> List a
