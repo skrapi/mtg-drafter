@@ -29,7 +29,7 @@ main =
 type alias Model =
     { searchName : String
     , searchResult : List CardInfo
-    , draftedCards : List CardInfo
+    , draftedCards : List ( CardInfo, Int )
     }
 
 
@@ -121,10 +121,10 @@ update msg model =
         SelectCard name ->
             let
                 draftList =
-                    [ name ]
+                    [ ( name, 1 ) ]
                         |> List.append model.draftedCards
                         |> List.sortBy
-                            (\n ->
+                            (\( n, _ ) ->
                                 case n.cmc of
                                     Just num ->
                                         if num == 0 && n.cardType == "Land" then
@@ -286,10 +286,12 @@ mainText val =
         (text val)
 
 
-cardDisplay : CardInfo -> Element.Element msg
-cardDisplay card =
+cardDisplay : ( CardInfo, Int ) -> Element.Element msg
+cardDisplay ( card, count ) =
     Element.row [ Element.width Element.fill ]
-        [ mainText card.name
+        [ mainText (String.concat [ String.fromInt count, "x" ])
+        , mainText "  -  "
+        , mainText card.name
         , mainText "  -  "
         , mainText (String.fromInt (Maybe.withDefault 0 card.cmc))
         , mainText "  -  "
@@ -376,12 +378,23 @@ encodeCardInfo cardInfo =
         ]
 
 
+encodeCardInfoWithCount : ( CardInfo, Int ) -> E.Value
+encodeCardInfoWithCount ( cardInfo, count ) =
+    E.object
+        [ ( "name", E.string cardInfo.name )
+        , ( "manaCost", E.string <| Maybe.withDefault "" cardInfo.manaCost )
+        , ( "cmc", E.int <| Maybe.withDefault 0 cardInfo.cmc )
+        , ( "type", E.string cardInfo.cardType )
+        , ( "count", E.int count )
+        ]
+
+
 encode : Model -> E.Value
 encode model =
     E.object
         [ ( "searchName", E.string model.searchName )
         , ( "searchResult", E.list encodeCardInfo model.searchResult )
-        , ( "draftedCards", E.list encodeCardInfo model.draftedCards )
+        , ( "draftedCards", E.list encodeCardInfoWithCount model.draftedCards )
         ]
 
 
@@ -392,6 +405,11 @@ cardInfoDecoder =
         (D.maybe (D.field "manaCost" D.string))
         (D.maybe (D.field "cmc" D.int))
         (D.field "type" D.string)
+
+
+cardInfoWithCountDecoder : D.Decoder ( CardInfo, Int )
+cardInfoWithCountDecoder =
+    D.map2 Tuple.pair cardInfoDecoder (D.field "count" D.int)
 
 
 
@@ -414,4 +432,4 @@ modelDecoder =
     D.map3 Model
         (D.field "searchName" D.string)
         (D.field "searchResult" <| D.list cardInfoDecoder)
-        (D.field "draftedCards" <| D.list cardInfoDecoder)
+        (D.field "draftedCards" <| D.list cardInfoWithCountDecoder)

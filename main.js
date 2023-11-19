@@ -5420,6 +5420,15 @@ var $author$project$Main$cardInfoDecoder = A5(
 	$elm$json$Json$Decode$maybe(
 		A2($elm$json$Json$Decode$field, 'cmc', $elm$json$Json$Decode$int)),
 	A2($elm$json$Json$Decode$field, 'type', $elm$json$Json$Decode$string));
+var $elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
+var $author$project$Main$cardInfoWithCountDecoder = A3(
+	$elm$json$Json$Decode$map2,
+	$elm$core$Tuple$pair,
+	$author$project$Main$cardInfoDecoder,
+	A2($elm$json$Json$Decode$field, 'count', $elm$json$Json$Decode$int));
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$json$Json$Decode$map3 = _Json_map3;
 var $author$project$Main$modelDecoder = A4(
@@ -5433,7 +5442,7 @@ var $author$project$Main$modelDecoder = A4(
 	A2(
 		$elm$json$Json$Decode$field,
 		'draftedCards',
-		$elm$json$Json$Decode$list($author$project$Main$cardInfoDecoder)));
+		$elm$json$Json$Decode$list($author$project$Main$cardInfoWithCountDecoder)));
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (flags) {
@@ -5501,6 +5510,31 @@ var $author$project$Main$encodeCardInfo = function (cardInfo) {
 				$elm$json$Json$Encode$string(cardInfo.cardType))
 			]));
 };
+var $author$project$Main$encodeCardInfoWithCount = function (_v0) {
+	var cardInfo = _v0.a;
+	var count = _v0.b;
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'name',
+				$elm$json$Json$Encode$string(cardInfo.name)),
+				_Utils_Tuple2(
+				'manaCost',
+				$elm$json$Json$Encode$string(
+					A2($elm$core$Maybe$withDefault, '', cardInfo.manaCost))),
+				_Utils_Tuple2(
+				'cmc',
+				$elm$json$Json$Encode$int(
+					A2($elm$core$Maybe$withDefault, 0, cardInfo.cmc))),
+				_Utils_Tuple2(
+				'type',
+				$elm$json$Json$Encode$string(cardInfo.cardType)),
+				_Utils_Tuple2(
+				'count',
+				$elm$json$Json$Encode$int(count))
+			]));
+};
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {
 		return _Json_wrap(
@@ -5522,7 +5556,7 @@ var $author$project$Main$encode = function (model) {
 				A2($elm$json$Json$Encode$list, $author$project$Main$encodeCardInfo, model.searchResult)),
 				_Utils_Tuple2(
 				'draftedCards',
-				A2($elm$json$Json$Encode$list, $author$project$Main$encodeCardInfo, model.draftedCards))
+				A2($elm$json$Json$Encode$list, $author$project$Main$encodeCardInfoWithCount, model.draftedCards))
 			]));
 };
 var $author$project$Main$setStorage = _Platform_outgoingPort('setStorage', $elm$core$Basics$identity);
@@ -6460,10 +6494,11 @@ var $author$project$Main$update = F2(
 				var name = msg.a;
 				var draftList = A2(
 					$elm$core$List$sortBy,
-					function (n) {
-						var _v4 = n.cmc;
-						if (_v4.$ === 'Just') {
-							var num = _v4.a;
+					function (_v4) {
+						var n = _v4.a;
+						var _v5 = n.cmc;
+						if (_v5.$ === 'Just') {
+							var num = _v5.a;
 							return ((!num) && (n.cardType === 'Land')) ? (-1) : num;
 						} else {
 							return -1;
@@ -6473,7 +6508,9 @@ var $author$project$Main$update = F2(
 						$elm$core$List$append,
 						model.draftedCards,
 						_List_fromArray(
-							[name])));
+							[
+								_Utils_Tuple2(name, 1)
+							])));
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -6512,6 +6549,9 @@ var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
 };
 var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
+var $elm$core$String$concat = function (strings) {
+	return A2($elm$core$String$join, '', strings);
+};
 var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
 	return {$: 'Fill', a: a};
 };
@@ -8897,9 +8937,6 @@ var $mdgriffith$elm_ui$Internal$Style$sliderReset = '\ninput[type=range] {\n  -w
 var $mdgriffith$elm_ui$Internal$Style$thumbReset = '\ninput[type=range]::-webkit-slider-thumb {\n    -webkit-appearance: none;\n    opacity: 0.5;\n    width: 80px;\n    height: 80px;\n    background-color: black;\n    border:none;\n    border-radius: 5px;\n}\ninput[type=range]::-moz-range-thumb {\n    opacity: 0.5;\n    width: 80px;\n    height: 80px;\n    background-color: black;\n    border:none;\n    border-radius: 5px;\n}\ninput[type=range]::-ms-thumb {\n    opacity: 0.5;\n    width: 80px;\n    height: 80px;\n    background-color: black;\n    border:none;\n    border-radius: 5px;\n}\ninput[type=range][orient=vertical]{\n    writing-mode: bt-lr; /* IE */\n    -webkit-appearance: slider-vertical;  /* WebKit */\n}\n';
 var $mdgriffith$elm_ui$Internal$Style$trackReset = '\ninput[type=range]::-moz-range-track {\n    background: transparent;\n    cursor: pointer;\n}\ninput[type=range]::-ms-track {\n    background: transparent;\n    cursor: pointer;\n}\ninput[type=range]::-webkit-slider-runnable-track {\n    background: transparent;\n    cursor: pointer;\n}\n';
 var $mdgriffith$elm_ui$Internal$Style$overrides = '@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.row) + (' > ' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + (' { flex-basis: auto !important; } ' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.row) + (' > ' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.container) + (' { flex-basis: auto !important; }}' + ($mdgriffith$elm_ui$Internal$Style$inputTextReset + ($mdgriffith$elm_ui$Internal$Style$sliderReset + ($mdgriffith$elm_ui$Internal$Style$trackReset + ($mdgriffith$elm_ui$Internal$Style$thumbReset + $mdgriffith$elm_ui$Internal$Style$explainer)))))))))))))));
-var $elm$core$String$concat = function (strings) {
-	return A2($elm$core$String$join, '', strings);
-};
 var $mdgriffith$elm_ui$Internal$Style$Intermediate = function (a) {
 	return {$: 'Intermediate', a: a};
 };
@@ -12485,8 +12522,8 @@ var $author$project$Main$letterToColor = function (_char) {
 			return _Debug_todo(
 				'Main',
 				{
-					start: {line: 241, column: 13},
-					end: {line: 241, column: 23}
+					start: {line: 242, column: 13},
+					end: {line: 242, column: 23}
 				})('branch \'_\' not implemented');
 	}
 };
@@ -12593,7 +12630,9 @@ var $mdgriffith$elm_ui$Element$row = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
-var $author$project$Main$cardDisplay = function (card) {
+var $author$project$Main$cardDisplay = function (_v0) {
+	var card = _v0.a;
+	var count = _v0.b;
 	return A2(
 		$mdgriffith$elm_ui$Element$row,
 		_List_fromArray(
@@ -12602,6 +12641,14 @@ var $author$project$Main$cardDisplay = function (card) {
 			]),
 		_List_fromArray(
 			[
+				$author$project$Main$mainText(
+				$elm$core$String$concat(
+					_List_fromArray(
+						[
+							$elm$core$String$fromInt(count),
+							'x'
+						]))),
+				$author$project$Main$mainText('  -  '),
 				$author$project$Main$mainText(card.name),
 				$author$project$Main$mainText('  -  '),
 				$author$project$Main$mainText(
