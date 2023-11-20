@@ -316,7 +316,7 @@ cardDisplay ( card, count ) =
 
 cardCountDisplay : (Int, Int) -> Element.Element msg 
 cardCountDisplay (manacost, count) = 
-    mainText <| String.concat ["cost ", String.fromInt manacost, " count ", String.fromInt count]
+    mainText <| String.concat [String.fromInt count, "x ", String.fromInt manacost, " mana"]
 
 cardCounter : (CardInfo, Int) -> Dict.Dict Int Int -> Dict.Dict Int Int
 cardCounter (cardInfo, count) acc = 
