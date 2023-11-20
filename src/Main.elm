@@ -11,6 +11,7 @@ import Json.Decode as D
 import Json.Encode as E
 import Style exposing (Style(..), styling)
 import Url.Builder
+import Dict
 
 
 
@@ -121,7 +122,7 @@ update msg model =
         SelectCard card ->
             let
                 draftList =
-                    if List.any (\( card_info, num ) -> card_info == card) model.draftedCards then
+                    if List.any (\( card_info, _ ) -> card_info == card) model.draftedCards then
                         List.map
                             (\( card_info, num ) ->
                                 if card_info == card then
@@ -313,6 +314,22 @@ cardDisplay ( card, count ) =
         , Element.row [] <| List.map manaIcon <| getManaCostList card
         ]
 
+cardCountDisplay : (Int, Int) -> Element.Element msg 
+cardCountDisplay (manacost, count) = 
+    mainText <| String.concat ["cost ", String.fromInt manacost, " count ", String.fromInt count]
+
+cardCounter : (CardInfo, Int) -> Dict.Dict Int Int -> Dict.Dict Int Int
+cardCounter (cardInfo, count) acc = 
+  if Dict.member (Maybe.withDefault 0 cardInfo.cmc) acc then
+    Dict.update (Maybe.withDefault 0 cardInfo.cmc) (\current_count -> Just (count + Maybe.withDefault 0 current_count) ) acc
+  else
+    Dict.insert (Maybe.withDefault 0 cardInfo.cmc) count acc
+
+statsDisplay : List (CardInfo, Int) -> Element.Element msg
+statsDisplay deck = 
+  let stats = List.foldl cardCounter Dict.empty deck
+  in Element.column [] <| List.map cardCountDisplay (Dict.toList stats)
+
 
 view : Model -> Html Msg
 view model =
@@ -333,6 +350,7 @@ view model =
                     ]
                 , Element.column [ Element.width <| Element.px 300, Element.padding 10, Element.spacing 7, Element.alignTop ]
                     [ mainText "Drafted Cards"
+                    , statsDisplay model.draftedCards
                     , Element.column [ Element.padding 10, Element.spacing 7 ]
                         (List.map cardDisplay
                             model.draftedCards

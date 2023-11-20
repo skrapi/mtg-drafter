@@ -6496,7 +6496,6 @@ var $author$project$Main$update = F2(
 					$elm$core$List$any,
 					function (_v6) {
 						var card_info = _v6.a;
-						var num = _v6.b;
 						return _Utils_eq(card_info, card);
 					},
 					model.draftedCards) ? A2(
@@ -12537,8 +12536,8 @@ var $author$project$Main$letterToColor = function (_char) {
 			return _Debug_todo(
 				'Main',
 				{
-					start: {line: 257, column: 13},
-					end: {line: 257, column: 23}
+					start: {line: 258, column: 13},
+					end: {line: 258, column: 23}
 				})('branch \'_\' not implemented');
 	}
 };
@@ -13138,6 +13137,49 @@ var $mdgriffith$elm_ui$Element$spacing = function (x) {
 			A2($mdgriffith$elm_ui$Internal$Model$spacingName, x, x),
 			x,
 			x));
+};
+var $author$project$Main$cardCountDisplay = function (_v0) {
+	var manacost = _v0.a;
+	var count = _v0.b;
+	return $author$project$Main$mainText(
+		$elm$core$String$concat(
+			_List_fromArray(
+				[
+					'cost ',
+					$elm$core$String$fromInt(manacost),
+					' count ',
+					$elm$core$String$fromInt(count)
+				])));
+};
+var $author$project$Main$cardCounter = F2(
+	function (_v0, acc) {
+		var cardInfo = _v0.a;
+		var count = _v0.b;
+		return A2(
+			$elm$core$Dict$member,
+			A2($elm$core$Maybe$withDefault, 0, cardInfo.cmc),
+			acc) ? A3(
+			$elm$core$Dict$update,
+			A2($elm$core$Maybe$withDefault, 0, cardInfo.cmc),
+			function (current_count) {
+				return $elm$core$Maybe$Just(
+					count + A2($elm$core$Maybe$withDefault, 0, current_count));
+			},
+			acc) : A3(
+			$elm$core$Dict$insert,
+			A2($elm$core$Maybe$withDefault, 0, cardInfo.cmc),
+			count,
+			acc);
+	});
+var $author$project$Main$statsDisplay = function (deck) {
+	var stats = A3($elm$core$List$foldl, $author$project$Main$cardCounter, $elm$core$Dict$empty, deck);
+	return A2(
+		$mdgriffith$elm_ui$Element$column,
+		_List_Nil,
+		A2(
+			$elm$core$List$map,
+			$author$project$Main$cardCountDisplay,
+			$elm$core$Dict$toList(stats)));
 };
 var $mdgriffith$elm_ui$Element$Input$TextInputNode = function (a) {
 	return {$: 'TextInputNode', a: a};
@@ -14158,6 +14200,7 @@ var $author$project$Main$view = function (model) {
 							_List_fromArray(
 								[
 									$author$project$Main$mainText('Drafted Cards'),
+									$author$project$Main$statsDisplay(model.draftedCards),
 									A2(
 									$mdgriffith$elm_ui$Element$column,
 									_List_fromArray(
