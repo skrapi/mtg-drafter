@@ -1,6 +1,9 @@
 port module Main exposing (..)
 
 import Browser
+import Chart as C
+import Chart.Attributes as CA
+import Dict
 import Element exposing (text)
 import Element.Background as Background
 import Element.Input as Input
@@ -11,7 +14,6 @@ import Json.Decode as D
 import Json.Encode as E
 import Style exposing (Style(..), styling)
 import Url.Builder
-import Dict
 
 
 
@@ -314,21 +316,48 @@ cardDisplay ( card, count ) =
         , Element.row [] <| List.map manaIcon <| getManaCostList card
         ]
 
-cardCountDisplay : (Int, Int) -> Element.Element msg 
-cardCountDisplay (manacost, count) = 
-    mainText <| String.concat [String.fromInt count, "x ", String.fromInt manacost, " mana"]
 
-cardCounter : (CardInfo, Int) -> Dict.Dict Int Int -> Dict.Dict Int Int
-cardCounter (cardInfo, count) acc = 
-  if Dict.member (Maybe.withDefault 0 cardInfo.cmc) acc then
-    Dict.update (Maybe.withDefault 0 cardInfo.cmc) (\current_count -> Just (count + Maybe.withDefault 0 current_count) ) acc
-  else
-    Dict.insert (Maybe.withDefault 0 cardInfo.cmc) count acc
+cardCountDisplay : ( Int, Int ) -> Element.Element msg
+cardCountDisplay ( manacost, count ) =
+    mainText <| String.concat [ String.fromInt count, "x ", String.fromInt manacost, " mana" ]
 
-statsDisplay : List (CardInfo, Int) -> Element.Element msg
-statsDisplay deck = 
-  let stats = List.foldl cardCounter Dict.empty deck
-  in Element.column [] <| List.map cardCountDisplay (Dict.toList stats)
+
+cardCounter : ( CardInfo, Int ) -> Dict.Dict Int Int -> Dict.Dict Int Int
+cardCounter ( cardInfo, count ) acc =
+    if Dict.member (Maybe.withDefault 0 cardInfo.cmc) acc then
+        Dict.update (Maybe.withDefault 0 cardInfo.cmc) (\current_count -> Just (count + Maybe.withDefault 0 current_count)) acc
+
+    else
+        Dict.insert (Maybe.withDefault 0 cardInfo.cmc) count acc
+
+
+statsDisplay : List ( CardInfo, Int ) -> Element.Element msg
+statsDisplay deck =
+    let
+        stats =
+            List.foldl cardCounter Dict.empty deck
+    in
+    Element.column [] <| List.map cardCountDisplay (Dict.toList stats)
+
+
+chartDisplay : Html msg
+chartDisplay =
+    C.chart
+        [ CA.height 30
+        , CA.width 30
+        ]
+        [ C.xLabels [ CA.withGrid, CA.ints ]
+        , C.yLabels [ CA.withGrid ]
+        , C.bars
+            [ CA.x1 .x ]
+            [ C.bar .z [ CA.striped [] ]
+            , C.bar .y []
+            ]
+            [ { x = 1, y = 3, z = 1 }
+            , { x = 2, y = 2, z = 3 }
+            , { x = 3, y = 4, z = 2 }
+            ]
+        ]
 
 
 view : Model -> Html Msg
@@ -359,14 +388,13 @@ view model =
                 ]
             ]
 
-
-
 -- , img
 --     [ src <|
 --         Maybe.withDefault "" model.cardImageUrl
 --     , width 300
 --     ]
 --     []
+
 -- PORTS
 
 

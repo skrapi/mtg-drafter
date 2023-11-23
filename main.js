@@ -12536,8 +12536,8 @@ var $author$project$Main$letterToColor = function (_char) {
 			return _Debug_todo(
 				'Main',
 				{
-					start: {line: 258, column: 13},
-					end: {line: 258, column: 23}
+					start: {line: 260, column: 13},
+					end: {line: 260, column: 23}
 				})('branch \'_\' not implemented');
 	}
 };
@@ -13145,10 +13145,10 @@ var $author$project$Main$cardCountDisplay = function (_v0) {
 		$elm$core$String$concat(
 			_List_fromArray(
 				[
-					'cost ',
+					$elm$core$String$fromInt(count),
+					'x ',
 					$elm$core$String$fromInt(manacost),
-					' count ',
-					$elm$core$String$fromInt(count)
+					' mana'
 				])));
 };
 var $author$project$Main$cardCounter = F2(
