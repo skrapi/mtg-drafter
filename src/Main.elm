@@ -310,10 +310,10 @@ cardDisplay ( card, count ) =
         [ mainText (String.concat [ String.fromInt count, "x" ])
         , mainText "  -  "
         , mainText card.name
-        , mainText "  -  "
-        , mainText (String.fromInt (Maybe.withDefault 0 card.cmc))
-        , mainText "  -  "
-        , Element.row [] <| List.map manaIcon <| getManaCostList card
+        -- , mainText "  -  "
+        -- , mainText (String.fromInt (Maybe.withDefault 0 card.cmc))
+        , mainText "     "
+        , Element.row [Element.alignRight] <| List.map manaIcon <| getManaCostList card
         ]
 
 

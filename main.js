@@ -6563,6 +6563,11 @@ var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
 };
 var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
+var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
+	return {$: 'AlignX', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
+var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
 var $elm$core$String$concat = function (strings) {
 	return A2($elm$core$String$join, '', strings);
 };
@@ -12169,9 +12174,6 @@ var $mdgriffith$elm_ui$Internal$Model$PseudoSelector = F2(
 		return {$: 'PseudoSelector', a: a, b: b};
 	});
 var $mdgriffith$elm_ui$Internal$Flag$hover = $mdgriffith$elm_ui$Internal$Flag$flag(33);
-var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
-	return {$: 'AlignX', a: a};
-};
 var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
 	return {$: 'Attr', a: a};
 };
@@ -12664,14 +12666,11 @@ var $author$project$Main$cardDisplay = function (_v0) {
 						]))),
 				$author$project$Main$mainText('  -  '),
 				$author$project$Main$mainText(card.name),
-				$author$project$Main$mainText('  -  '),
-				$author$project$Main$mainText(
-				$elm$core$String$fromInt(
-					A2($elm$core$Maybe$withDefault, 0, card.cmc))),
-				$author$project$Main$mainText('  -  '),
+				$author$project$Main$mainText('     '),
 				A2(
 				$mdgriffith$elm_ui$Element$row,
-				_List_Nil,
+				_List_fromArray(
+					[$mdgriffith$elm_ui$Element$alignRight]),
 				A2(
 					$elm$core$List$map,
 					$author$project$Main$manaIcon,
